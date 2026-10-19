@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlantic Edge Surf School - Alpha Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 pb-20">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-10">
+        <h1 class="text-xl font-bold text-center">Atlantic Edge Surf School</h1>
+        <p class="text-xs text-blue-200 text-center">Internal Operations Alpha</p>
+    </header>
+
+    <!-- Navigation Tabs (Large touch targets for wet hands) -->
+    <nav class="flex justify-around bg-white border-b border-slate-200 p-2 shadow-sm sticky top-16 z-10">
+        <button onclick="switchTab('today')" id="btn-today" class="flex-1 py-3 text-lg font-bold text-blue-600 border-b-4 border-blue-600">Today</button>
+        <button onclick="switchTab('rebook')" id="btn-rebook" class="flex-1 py-3 text-lg font-bold text-slate-400 border-b-4 border-transparent">Rebook</button>
+        <button onclick="switchTab('money')" id="btn-money" class="flex-1 py-3 text-lg font-bold text-slate-400 border-b-4 border-transparent">Money</button>
+    </nav>
+
+    <main class="p-4 max-w-md mx-auto">
+        <!-- TODAY VIEW -->
+        <section id="tab-today" class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-700">Today's Sessions (Sample Data)</h2>
+                <span class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded font-semibold">Sample Data</span>
+            </div>
+            <div id="sessions-container" class="space-y-3">
+                <!-- Dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- REBOOK VIEW -->
+        <section id="tab-rebook" class="space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-700">Pending Rebooks</h2>
+                <span id="rebook-count" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">0 waiting</span>
+            </div>
+            <div id="rebook-container" class="space-y-3">
+                <!-- Dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- MONEY VIEW -->
+        <section id="tab-money" class="space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-700">Financial Risk Dashboard</h2>
+                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-semibold">Live Metrics</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow border border-slate-200 text-center">
+                    <p class="text-sm text-slate-500">Bookings Waiting</p>
+                    <p id="stat-waiting" class="text-3xl font-extrabold text-blue-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow border border-slate-200 text-center">
+                    <p class="text-sm text-slate-500">Value at Risk</p>
+                    <p id="stat-risk" class="text-3xl font-extrabold text-red-600 mt-1">€0</p>
+                </div>
+            </div>
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
+                <p class="text-sm text-amber-800"><strong>Note:</strong> Calculated at €45 per person per lesson slot. Unbooked customers past 48 hours require urgent phone follow-up.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Initial Sample Data (at least 8 records across sessions & bookings)
+        const defaultSessions = [
+            { id: 1, time: "09:00 AM - Beginner Wave", spots: 12, instructor: "Sean", cancelled: false },
+            { id: 2, time: "11:00 AM - Intermediate Surf", spots: 10, instructor: "Niamh", cancelled: false },
+            { id: 3, time: "01:00 PM - Group Lesson", spots: 8, instructor: "Conor", cancelled: false },
+            { id: 4, time: "03:00 PM - Afternoon Catch", spots: 12, instructor: "Aoife", cancelled: false }
+        ];
+
+        const defaultRebooks = [
+            { id: 101, name: "Liam O'Connor", groupSize: 3, contact: "087-1234567", timestamp: Date.now() - (50 * 3600 * 1000) }, // > 48 hours (Red)
+            { id: 102, name: "Emma Murphy", groupSize: 2, contact
