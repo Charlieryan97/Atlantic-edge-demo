@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlantic Edge Surf School - Alpha Demo</title>
+    <title>Atlantic Edge Surf School — Operations Alpha</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 text-slate-900 pb-20">
@@ -14,67 +14,170 @@
         <p class="text-xs text-blue-200 text-center">Internal Operations Alpha</p>
     </header>
 
-    <!-- Navigation Tabs (Large touch targets for wet hands) -->
+    <!-- Navigation Tabs -->
     <nav class="flex justify-around bg-white border-b border-slate-200 p-2 shadow-sm sticky top-16 z-10">
         <button onclick="switchTab('today')" id="btn-today" class="flex-1 py-3 text-lg font-bold text-blue-600 border-b-4 border-blue-600">Today</button>
-        <button onclick="switchTab('rebook')" id="btn-rebook" class="flex-1 py-3 text-lg font-bold text-slate-400 border-b-4 border-transparent">Rebook</button>
-        <button onclick="switchTab('money')" id="btn-money" class="flex-1 py-3 text-lg font-bold text-slate-400 border-b-4 border-transparent">Money</button>
+        <button onclick="switchTab('rebook')" id="btn-rebook" class="flex-1 py-3 text-lg font-bold text-slate-500">Rebook</button>
+        <button onclick="switchTab('money')" id="btn-money" class="flex-1 py-3 text-lg font-bold text-slate-500">Money</button>
     </nav>
 
-    <main class="p-4 max-w-md mx-auto">
-        <!-- TODAY VIEW -->
-        <section id="tab-today" class="space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-700">Today's Sessions (Sample Data)</h2>
-                <span class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded font-semibold">Sample Data</span>
+    <!-- Views Container -->
+    <main class="max-w-xl mx-auto p-4">
+        
+        <!-- View 1: Today -->
+        <section id="view-today" class="space-y-4">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold">Today's Sessions</h2>
+                <button onclick="loadSampleData()" class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded font-semibold border border-amber-300">Reload Data</button>
             </div>
-            <div id="sessions-container" class="space-y-3">
-                <!-- Dynamically loaded -->
+            <div id="sessions-list" class="space-y-3"></div>
+        </section>
+
+        <!-- View 2: Rebook Queue -->
+        <section id="view-rebook" class="space-y-4 hidden">
+            <h2 class="text-lg font-bold">Unbooked Clients (Weather Cancelled)</h2>
+            <div id="unbooked-list" class="space-y-3"></div>
+        </section>
+
+        <!-- View 3: Money -->
+        <section id="view-money" class="space-y-4 hidden">
+            <h2 class="text-lg font-bold">Financial Summary</h2>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-slate-600">Pending / At Risk:</span>
+                    <span id="money-pending" class="font-bold text-red-600">€0</span>
+                </div>
+                <div class="flex justify-between border-b pb-2">
+                    <span class="text-slate-600">Recovered Revenue:</span>
+                    <span id="money-recovered" class="font-bold text-green-600">€0</span>
+                </div>
+                <div class="flex justify-between pt-1">
+                    <span class="text-slate-800 font-bold">Total Session Value:</span>
+                    <span id="money-total" class="font-bold text-slate-900">€0</span>
+                </div>
             </div>
         </section>
 
-        <!-- REBOOK VIEW -->
-        <section id="tab-rebook" class="space-y-4 hidden">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-700">Pending Rebooks</h2>
-                <span id="rebook-count" class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">0 waiting</span>
-            </div>
-            <div id="rebook-container" class="space-y-3">
-                <!-- Dynamically loaded -->
-            </div>
-        </section>
-
-        <!-- MONEY VIEW -->
-        <section id="tab-money" class="space-y-4 hidden">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold text-slate-700">Financial Risk Dashboard</h2>
-                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-semibold">Live Metrics</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow border border-slate-200 text-center">
-                    <p class="text-sm text-slate-500">Bookings Waiting</p>
-                    <p id="stat-waiting" class="text-3xl font-extrabold text-blue-600 mt-1">0</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow border border-slate-200 text-center">
-                    <p class="text-sm text-slate-500">Value at Risk</p>
-                    <p id="stat-risk" class="text-3xl font-extrabold text-red-600 mt-1">€0</p>
-                </div>
-            </div>
-            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
-                <p class="text-sm text-amber-800"><strong>Note:</strong> Calculated at €45 per person per lesson slot. Unbooked customers past 48 hours require urgent phone follow-up.</p>
-            </div>
-        </section>
     </main>
 
     <script>
-        // Initial Sample Data (at least 8 records across sessions & bookings)
-        const defaultSessions = [
-            { id: 1, time: "09:00 AM - Beginner Wave", spots: 12, instructor: "Sean", cancelled: false },
-            { id: 2, time: "11:00 AM - Intermediate Surf", spots: 10, instructor: "Niamh", cancelled: false },
-            { id: 3, time: "01:00 PM - Group Lesson", spots: 8, instructor: "Conor", cancelled: false },
-            { id: 4, time: "03:00 PM - Afternoon Catch", spots: 12, instructor: "Aoife", cancelled: false }
+        const INITIAL_DATA = [
+            { id: 101, name: "Liam O'Connor", group: "Beginner Surf Group", price: 45, status: "scheduled", time: "10:00 AM" },
+            { id: 102, name: "Aoife Murphy", group: "Beginner Surf Group", price: 45, status: "scheduled", time: "10:00 AM" },
+            { id: 103, name: "Sean Kelly", group: "Intermediate Reef Session", price: 60, status: "scheduled", time: "02:00 PM" },
+            { id: 104, name: "Siobhan Walsh", group: "Intermediate Reef Session", price: 60, status: "scheduled", time: "02:00 PM" }
         ];
 
-        const defaultRebooks = [
-            { id: 101, name: "Liam O'Connor", groupSize: 3, contact: "087-1234567", timestamp: Date.now() - (50 * 3600 * 1000) }, // > 48 hours (Red)
-            { id: 102, name: "Emma Murphy", groupSize: 2, contact
+        function getStore() {
+            const data = localStorage.getItem('atlantic_edge_data');
+            return data ? JSON.parse(data) : null;
+        }
+
+        function setStore(data) {
+            localStorage.setItem('atlantic_edge_data', JSON.stringify(data));
+        }
+
+        function initApp() {
+            let data = getStore();
+            if (!data) {
+                setStore(INITIAL_DATA);
+                data = INITIAL_DATA;
+            }
+            renderViews();
+        }
+
+        function loadSampleData() {
+            setStore(INITIAL_DATA);
+            renderViews();
+        }
+
+        function switchTab(tab) {
+            ['today', 'rebook', 'money'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                const btn = document.getElementById('btn-' + t);
+                btn.className = 'flex-1 py-3 text-lg font-bold text-slate-500';
+            });
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tab);
+            activeBtn.className = 'flex-1 py-3 text-lg font-bold text-blue-600 border-b-4 border-blue-600';
+        }
+
+        function updateStatus(id, newStatus) {
+            let data = getStore();
+            data = data.map(item => item.id === id ? { ...item, status: newStatus } : item);
+            setStore(data);
+            renderViews();
+        }
+
+        function renderViews() {
+            const data = getStore() || INITIAL_DATA;
+            
+            // Render Today
+            const todayList = document.getElementById('sessions-list');
+            todayList.innerHTML = '';
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between gap-3';
+                let statusBadge = `<span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 font-bold rounded">${item.status.toUpperCase()}</span>`;
+                if(item.status === 'cancelled') statusBadge = `<span class="text-xs px-2 py-1 bg-red-100 text-red-800 font-bold rounded">CANCELLED</span>`;
+                if(item.status === 'rebooked') statusBadge = `<span class="text-xs px-2 py-1 bg-green-100 text-green-800 font-bold rounded">REBOOKED</span>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-slate-800">${item.name}</h3>
+                            <p class="text-xs text-slate-500">${item.group} • ${item.time}</p>
+                            <p class="text-sm font-semibold text-slate-700 mt-1">€${item.price}</p>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="flex gap-2">
+                        ${item.status === 'scheduled' ? `
+                            <button onclick="updateStatus(${item.id}, 'cancelled')" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm">Cancel Weather</button>
+                        ` : ''}
+                        ${item.status === 'cancelled' ? `
+                            <button onclick="updateStatus(${item.id}, 'rebooked')" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg text-sm">Rebook Client</button>
+                        ` : ''}
+                    </div>
+                `;
+                todayList.appendChild(card);
+            });
+
+            // Render Rebook
+            const unbookedList = document.getElementById('unbooked-list');
+            unbookedList.innerHTML = '';
+            const unbooked = data.filter(i => i.status === 'cancelled');
+            if(unbooked.length === 0) {
+                unbookedList.innerHTML = `<p class="text-sm text-slate-500 italic text-center py-6">No pending weather cancellations!</p>`;
+            } else {
+                unbooked.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center';
+                    card.innerHTML = `
+                        <div>
+                            <h3 class="font-bold text-slate-800">${item.name}</h3>
+                            <p class="text-xs text-slate-500">Value at risk: €${item.price}</p>
+                        </div>
+                        <button onclick="updateStatus(${item.id}, 'rebooked')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg text-sm">Slot Rebooked</button>
+                    `;
+                    unbookedList.appendChild(card);
+                });
+            }
+
+            // Render Money
+            let pending = 0, recovered = 0, total = 0;
+            data.forEach(i => {
+                total += i.price;
+                if(i.status === 'cancelled') pending += i.price;
+                if(i.status === 'rebooked') recovered += i.price;
+            });
+            document.getElementById('money-pending').textContent = '€' + pending;
+            document.getElementById('money-recovered').textContent = '€' + recovered;
+            document.getElementById('money-total').textContent = '€' + total;
+        }
+
+        // Run automatically when page loads
+        window.onload = initApp;
+    </script>
+</body>
+</html>
